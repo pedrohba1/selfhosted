@@ -10,7 +10,7 @@ https://github.com/nvmd/nixos-raspberrypi
 
 
 It contains a `flake.nix` file that allows we to build a ready image for raspberry pi zero 2 W. I edited it a bit so
-it connects to regular wi-fi once powered, and accepts my ssh key by default. It needs pre-defined the wifi name and password, and also the public key being passed to the Pi board. 
+it connects to regular wifi once powered, and accepts my ssh key by default. It needs pre-defined the wifi name and password, and also the public key being passed to the Pi board. 
 
 For all the custom configs, only the `custom-user-config` should be edited to add the dependencies. Then the image can be built, flashed into the SD card and it is done. Ideally, you just use this flake to update it. Just clone this repo
 that contains the flake and run:
@@ -34,8 +34,8 @@ You can build the image from the flake and flash into an SD card like this too:
  ~ zstdcat nixos-installer-rpi02-uboot.img.zst | sudo dd of=/dev/sda bs=4M status=progress conv=fsync
 ```
 
-
-
+## How to set it up properly
+Once the image is set, is is generally better to setup everything else with the NixOS home-manager. 
 
 
 
