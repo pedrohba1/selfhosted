@@ -28,10 +28,14 @@ You can build the image from the flake and flash into an SD card like this too:
 ```bash
 
 
-# build the image
-~ nix build .#installerImages.rpi02
+# build the image (I use sudo because it uses the caches instead of building it locally)
+# NOTICE: without sudo this will take A WHILE (some hours)
+~ sudo nix build .#installerImages.rpi02
 # then flash it into the SD card
  ~ zstdcat nixos-installer-rpi02-uboot.img.zst | sudo dd of=/dev/sda bs=4M status=progress conv=fsync
+# sync cached writes
+ ~ sync
+
 ```
 
 ## How to set it up properly
