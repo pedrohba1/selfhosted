@@ -20,6 +20,16 @@ cd /etc/nixos-raspberrypi   # or wherever you cloned it
 sudo nixos-rebuild switch --flake .#rpi02-installer
 
 ```
+# Running the test vm
+
+```
+nix build .#vm
+export QEMU_OPTS="-nographic -serial mon:stdio"
+./result/bin/run-*-vm
+```
+```
+```
+
 
 ## Building the image from the flake
 
@@ -40,7 +50,6 @@ You can build the image from the flake and flash into an SD card like this too:
 
 ## How to set it up properly
 Once the image is set, is is generally better to setup everything else with the NixOS home-manager. 
-
 
 
 
