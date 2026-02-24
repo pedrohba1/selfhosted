@@ -4,6 +4,14 @@
   inputs = {
     nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi/main";
     nixpkgs.follows = "nixos-raspberrypi/nixpkgs";
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   nixConfig = {
@@ -64,6 +72,17 @@
         hostName:
         { pkgs, lib, ... }:
         {
+
+          imports = [
+            inputs.home-manager.nixosModules.home-manager
+            inputs.sops-nix.nixosModules.sops
+          ];
+
+          sops = {
+            defaultSopsFile = ./secrets/secrets.yaml;
+            age.keyFile = "/var/lib/sops-nix/key.txt";
+          };
+
           networking.hostName = hostName;
 
           services.openssh = {
@@ -113,8 +132,16 @@
 
       # Pi-only bits (don’t reuse in VM)
       mkPiConfig =
-        { pkgs, lib, ... }:
+        { config
+        , pkgs
+        , lib
+        , ...
+        }:
         {
+
+          # Tell sops-nix you want this secret available on the machine
+          sops.secrets.wifi_psk = { };
+
           networking.networkmanager.enable = lib.mkForce false;
 
           networking.wireless = {
@@ -122,8 +149,7 @@
             iwd.enable = lib.mkForce false;
             userControlled.enable = true;
 
-            # WARNING: don't keep PSKs in a public repo.
-            networks."BusinessEfun2025-IoT".psk = "K4GtGYH$Kt";
+            networks."BusinessEfun2025-IoT".pskFile = config.sops.secrets.wifi_psk.path;
           };
 
           services.udev.packages = [ pkgs.raspberrypi-udev-rules ];
