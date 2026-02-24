@@ -47,9 +47,9 @@
         };
 
       # ---- YOUR CONFIG (applies to installer + final system) ----
-      myBaseConfig = { pkgs, lib, ... }: {
+      mkBaseConfig = hostName: { pkgs, lib, ... }: {
 
-        networking.hostName = "rpi02";
+        networking.hostName = hostName;
 
         networking.networkmanager.enable = lib.mkForce false;
         networking.wireless = {
@@ -114,17 +114,33 @@
             ];
           })
 
-          myBaseConfig
+          (mkBaseConfig "rpi02")
+        ];
+
+        rpi04-installer = mkMyRpiInstaller [
+          ({ ... }: {
+            imports = with nixos-raspberrypi.nixosModules; [
+              raspberry-pi-4.base
+            ];
+          })
+
+          (mkBaseConfig "rpi04")
         ];
       };
 
       installerImages = {
         rpi02 =
           self.nixosConfigurations.rpi02-installer.config.system.build.sdImage;
+        rpi04 =
+          self.nixosConfigurations.rpi04-installer.config.system.build.sdImage;
       };
 
-      packages.aarch64-linux.rpi02-image =
-        self.nixosConfigurations.rpi02-installer.config.system.build.sdImage;
+      packages.aarch64-linux = {
+        rpi02-image =
+          self.nixosConfigurations.rpi02-installer.config.system.build.sdImage;
+        rpi04-image =
+          self.nixosConfigurations.rpi04-installer.config.system.build.sdImage;
+      };
     };
 }
 
