@@ -51,5 +51,10 @@ You can build the image from the flake and flash into an SD card like this too:
 ## How to set it up properly
 Once the image is set, is is generally better to setup everything else with the NixOS home-manager. 
 
+## Secrets handling
+
+The flake relies on `sops-nix` (see `flake.nix`) to decrypt `./secrets/secrets.yaml` at build time; there are no plaintext secrets baked into the image. The decrypted values are injected during the build and consumed via `sops.placeholder.*` in templates (for example, the `wpa_supplicant.conf` entry in `mkPiConfig`), so runtime files are generated from those values.
+
+You still need to provide the private key that matches the public key referenced by `/var/lib/sops-nix/key.txt` (and any other required credentials) when you build the flake, so SOPS can decrypt `secrets.yaml` before generating the installers.
 
 

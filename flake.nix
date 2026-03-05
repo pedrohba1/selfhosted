@@ -138,19 +138,30 @@
         , ...
         }:
         {
-
-          # Tell sops-nix you want this secret available on the machine
           sops.secrets.wifi_psk = { };
 
           networking.networkmanager.enable = lib.mkForce false;
+          networking.wireless.enable = lib.mkForce true;
+          networking.wireless.iwd.enable = lib.mkForce false;
+          networking.wireless.userControlled.enable = lib.mkForce false;
 
-          networking.wireless = {
-            enable = lib.mkForce true;
-            iwd.enable = lib.mkForce false;
-            userControlled.enable = true;
+          sops.templates."wpa_supplicant.conf" = {
+            owner = "root";
+            group = "root";
+            mode = "0400";
+            content = ''
+              ctrl_interface=DIR=/run/wpa_supplicant GROUP=wheel
+              update_config=1
+              country=BR
 
-            networks."BusinessEfun2025-IoT".pskFile = config.sops.secrets.wifi_psk.path;
+              network={
+                ssid="BusinessEfun2025-IoT"
+                psk="${config.sops.placeholder.wifi_psk}"
+              }
+            '';
           };
+
+          environment.etc."wpa_supplicant.conf".source = config.sops.templates."wpa_supplicant.conf".path;
 
           services.udev.packages = [ pkgs.raspberrypi-udev-rules ];
         };
