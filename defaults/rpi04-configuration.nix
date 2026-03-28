@@ -31,8 +31,6 @@
 
   # Uncomment or add modules and services you need below:
   services.openssh.enable = true;
-  services.networkmanager.enable = true;
-  # hardware.pulseaudio.enable = true;
 
   programs.zsh = {
     enable = true;
