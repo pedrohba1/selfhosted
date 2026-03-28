@@ -146,15 +146,11 @@
           boot.loader.grub.enable = false;
           boot.loader.generic-extlinux-compatible.enable = true;
 
-          networking.networkmanager.enable = lib.mkForce false;
-          networking.wireless.enable = lib.mkForce true;
+          networking.networkmanager.enable = true;
+          networking.networkmanager.unmanaged = [ "interface-name:usb0" ];
+          networking.wireless.enable = lib.mkForce false;
           networking.wireless.iwd.enable = lib.mkForce false;
           networking.wireless.userControlled.enable = lib.mkForce false;
-
-          networking.interfaces.wlan0.useDHCP = true;
-
-          networking.wireless.networks."ROMARTINS".psk = "Woodtree57";
-          networking.wireless.networks."Santa Cruz".psk = "Woodtree57";
 
           services.udev.packages = [ pkgs.raspberrypi-udev-rules ];
 

@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 {
   # Start customizing this configuration once the image boots.
   networking.hostName = "rpi04";
@@ -8,6 +13,7 @@
     extraGroups = [
       "wheel"
       "video"
+      "networkmanager"
     ];
     shell = pkgs.zsh;
   };
@@ -51,5 +57,49 @@
       export COLORTERM=truecolor
       export PATH="$HOME/.local/bin:$PATH"
     '';
+  };
+
+  networking.networkmanager.ensureProfiles.profiles.Romartins = {
+    connection = {
+      id = "ROMARTINS";
+      type = "wifi";
+      interface-name = "wlan0";
+      autoconnect = true;
+    };
+
+    wifi = {
+      mode = "infrastructure";
+      ssid = "ROMARTINS";
+    };
+
+    "wifi-security" = {
+      key-mgmt = "wpa-psk";
+      psk = "Woodtree57";
+    };
+
+    ipv4.method = "auto";
+    ipv6.method = "auto";
+  };
+
+  networking.networkmanager.ensureProfiles.profiles.SantaCruz = {
+    connection = {
+      id = "Santa Cruz";
+      type = "wifi";
+      interface-name = "wlan0";
+      autoconnect = true;
+    };
+
+    wifi = {
+      mode = "infrastructure";
+      ssid = "Santa Cruz";
+    };
+
+    "wifi-security" = {
+      key-mgmt = "wpa-psk";
+      psk = "Woodtree57";
+    };
+
+    ipv4.method = "auto";
+    ipv6.method = "auto";
   };
 }
