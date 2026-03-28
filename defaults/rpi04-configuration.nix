@@ -1,7 +1,6 @@
 { config, pkgs, ... }:
 {
   # Start customizing this configuration once the image boots.
-  system.stateVersion = "25.05";
   networking.hostName = "rpi04";
 
   users.users.nixos = {
