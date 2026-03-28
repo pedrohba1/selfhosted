@@ -58,11 +58,7 @@
                   (modulesPath + "/installer/sd-card/sd-image-aarch64-installer.nix")
                 ];
 
-                image.baseName =
-                  let
-                    cfg = config.boot.loader.raspberryPi;
-                  in
-                  lib.mkOverride 40 "my-nixos-rpi${cfg.variant}-${cfg.bootloader}";
+                image.baseName = lib.mkOverride 40 "my-${config.networking.hostName}";
               }
             )
           ]
@@ -147,6 +143,9 @@
           ...
         }:
         {
+          boot.loader.grub.enable = false;
+          boot.loader.generic-extlinux-compatible.enable = true;
+
           networking.networkmanager.enable = lib.mkForce false;
           networking.wireless.enable = lib.mkForce true;
           networking.wireless.iwd.enable = lib.mkForce false;
