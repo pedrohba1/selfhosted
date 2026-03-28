@@ -11,13 +11,6 @@
       "video"
     ];
     shell = pkgs.zsh;
-    # Add your public SSH key here so you can log in immediately.
-    openssh.authorizedKeys.keys = [ ];
-
-    openssh.authorizedKeys.githubKeys = [
-      "pedrohba1"
-      "ricardo-rp"
-    ];
   };
 
   environment.systemPackages = with pkgs; [
