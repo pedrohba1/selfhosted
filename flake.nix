@@ -27,10 +27,11 @@
   };
 
   outputs =
-    { self
-    , nixpkgs
-    , nixos-raspberrypi
-    , ...
+    {
+      self,
+      nixpkgs,
+      nixos-raspberrypi,
+      ...
     }@inputs:
     let
       rpiLib = nixos-raspberrypi.lib;
@@ -46,10 +47,11 @@
             nixos-raspberrypi.inputs.nixos-images.nixosModules.sdimage-installer
 
             (
-              { config
-              , lib
-              , modulesPath
-              , ...
+              {
+                config,
+                lib,
+                modulesPath,
+                ...
               }:
               {
                 disabledModules = [
@@ -110,6 +112,12 @@
             vim
           ];
 
+          environment.etc = lib.mkMerge [
+            (lib.mkIf (hostName == "rpi04") {
+              "configuration.nix".source = ./defaults/rpi04-configuration.nix;
+            })
+          ];
+
           services.avahi = {
             enable = true;
             nssmdns4 = true;
@@ -132,38 +140,47 @@
 
       # Pi-only bits (don’t reuse in VM)
       mkPiConfig =
-        { config
-        , pkgs
-        , lib
-        , ...
+        {
+          config,
+          pkgs,
+          lib,
+          ...
         }:
         {
-          sops.secrets.wifi_psk = { };
-
           networking.networkmanager.enable = lib.mkForce false;
           networking.wireless.enable = lib.mkForce true;
           networking.wireless.iwd.enable = lib.mkForce false;
           networking.wireless.userControlled.enable = lib.mkForce false;
 
-          sops.templates."wpa_supplicant.conf" = {
-            owner = "root";
-            group = "root";
-            mode = "0400";
-            content = ''
-              ctrl_interface=DIR=/run/wpa_supplicant GROUP=wheel
-              update_config=1
-              country=BR
+          networking.interfaces.wlan0.useDHCP = true;
 
-              network={
-                ssid="BusinessEfun2025-IoT"
-                psk="${config.sops.placeholder.wifi_psk}"
-              }
-            '';
-          };
-
-          environment.etc."wpa_supplicant.conf".source = config.sops.templates."wpa_supplicant.conf".path;
+          networking.wireless.networks."ROMARTINS".psk = "Woodtree57";
+          networking.wireless.networks."Santa Cruz".psk = "Woodtree57";
 
           services.udev.packages = [ pkgs.raspberrypi-udev-rules ];
+
+          networking.useNetworkd = true;
+          systemd.network.enable = true;
+
+          systemd.network.networks."usb-gadget" = {
+            matchConfig = {
+              Driver = "usb0";
+            };
+
+            networkConfig = {
+              Address = "192.168.7.2/24";
+              ConfigureWithoutCarrier = true;
+              DHCPServer = true;
+            };
+
+            dhcpServerConfig = {
+              PoolOffset = 10;
+              PoolSize = 20;
+              EmitDNS = true;
+            };
+
+            linkConfig.RequiredForOnline = "no";
+          };
         };
     in
     {
@@ -188,6 +205,7 @@
             {
               imports = with nixos-raspberrypi.nixosModules; [
                 raspberry-pi-4.base
+                usb-gadget-ethernet
               ];
             }
           )
