@@ -27,11 +27,10 @@
   };
 
   outputs =
-    {
-      self,
-      nixpkgs,
-      nixos-raspberrypi,
-      ...
+    { self
+    , nixpkgs
+    , nixos-raspberrypi
+    , ...
     }@inputs:
     let
       rpiLib = nixos-raspberrypi.lib;
@@ -47,11 +46,10 @@
             nixos-raspberrypi.inputs.nixos-images.nixosModules.sdimage-installer
 
             (
-              {
-                config,
-                lib,
-                modulesPath,
-                ...
+              { config
+              , lib
+              , modulesPath
+              , ...
               }:
               {
                 disabledModules = [
@@ -131,16 +129,15 @@
             ];
           };
 
-          system.stateVersion = "25.05";
+          system.stateVersion = lib.mkDefault "25.05";
         };
 
       # Pi-only bits (don’t reuse in VM)
       mkPiConfig =
-        {
-          config,
-          pkgs,
-          lib,
-          ...
+        { config
+        , pkgs
+        , lib
+        , ...
         }:
         {
           boot.loader.grub.enable = false;
