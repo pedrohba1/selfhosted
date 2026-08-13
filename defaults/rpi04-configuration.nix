@@ -39,7 +39,13 @@
     htop
     tree
     vim
+    neovim
+    nodejs_22
+    python3
+    python3Packages.ipykernel
   ];
+
+  environment.localBinInPath = true;
 
   # Uncomment or add modules and services you need below:
   services.openssh.enable = true;
