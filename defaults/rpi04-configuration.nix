@@ -5,7 +5,21 @@
   ...
 }:
 {
-  # Start customizing this configuration once the image boots.
+  fileSystems."/" = {
+    device = "/dev/disk/by-label/NIXOS_SD";
+    fsType = "ext4";
+  };
+
+  fileSystems."/boot/firmware" = {
+    device = "/dev/disk/by-label/FIRMWARE";
+    fsType = "vfat";
+    options = [
+      "noatime"
+      "noauto"
+      "x-systemd.automount"
+    ];
+  };
+
   networking.hostName = "rpi04";
 
   users.users.nixos = {

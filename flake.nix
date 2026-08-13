@@ -108,12 +108,6 @@
             vim
           ];
 
-          environment.etc = lib.mkMerge [
-            (lib.mkIf (hostName == "rpi04") {
-              "configuration.nix".source = ./defaults/rpi04-configuration.nix;
-            })
-          ];
-
           services.avahi = {
             enable = true;
             nssmdns4 = true;
@@ -180,6 +174,25 @@
     in
     {
       nixosConfigurations = {
+        rpi04 = rpiLib.nixosSystem {
+          specialArgs = inputs // {
+            inherit nixos-raspberrypi;
+          };
+          modules = [
+            (
+              { ... }:
+              {
+                imports = with nixos-raspberrypi.nixosModules; [
+                  raspberry-pi-4.base
+                ];
+              }
+            )
+            (mkCommonConfig "rpi04")
+            ./defaults/rpi04-configuration.nix
+            mkPiConfig
+          ];
+        };
+
         rpi02-installer = mkMyRpiInstaller [
           (
             { ... }:
